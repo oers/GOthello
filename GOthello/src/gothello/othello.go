@@ -28,6 +28,16 @@ type direction struct {
 	ver int
 }
 
+var dirs [8]direction = [8]direction{
+	direction{ 0, 1},
+	direction{ 0,-1},		
+	direction{ 1, 1},	
+	direction{-1,-1},
+	direction{ 1, 0},
+	direction{-1, 0},
+	direction{-1, 1},
+	direction{ 1,-1}}
+
 func Hello() {
 	fmt.Println("hello")
 	//list := new(list.List)
@@ -224,16 +234,6 @@ func (board *Board) flip(row, column int) bool {
 func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 	toFlip := (board.nextplayer - 1) * (board.nextplayer - 1) //1*1=1; -1*-1 = 1, 0*0 = 0
 	endflip := board.nextplayer
-
-	dirs := [...]direction{
-	direction{ 0, 1},
-	direction{ 0,-1},		
-	direction{ 1, 1},	
-	direction{-1,-1},
-	direction{ 1, 0},
-	direction{-1, 0},
-	direction{-1, 1},
-	direction{ 1,-1}}
 
 	flipped := 0
 	//look for flip in every direction
