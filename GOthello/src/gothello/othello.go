@@ -28,6 +28,7 @@ type direction struct {
 	ver int
 }
 
+//all directions
 var dirs [8]direction = [8]direction{
 	direction{ 0, 1},
 	direction{ 0,-1},		
@@ -124,6 +125,10 @@ func (board *Board) IsPossibleMove(field string) (bool) {
 	return board.isPossibleMoveInt(row, column)
 }
 
+func (board *Board) IsFinished() (bool) {
+	return board.finished
+}
+
 func (board *Board) GetState(field string, stone int) (state int){
 	row, column := stringMoveToInt(field)
 	if board.isPossibleMoveInt(row, column){
@@ -134,6 +139,20 @@ func (board *Board) GetState(field string, stone int) (state int){
 		return 0 // black
 	}
 	return 1 //white
+	
+}
+
+func (board *Board) MakeRandomMove(){
+}
+
+func (board *Board) GetPossibleMoves() (moves *list.List){
+    moves = list.New()  
+	for i := 1; i <64; i++ {
+		if board.isPossibleMoveInt(i/8, i%8) {
+			moves.PushBack(intMoveToString(i/8, i%8))
+		}
+	}
+	return
 	
 }
 
@@ -340,6 +359,23 @@ func (board *Board) isPossibleMoveInt(row, column int) (bool){
 
 func (board *Board) IsNextPlayerBlack() (bool){
 	return board.nextplayer == 0;
+}
+
+func intMoveToString(row, column int) (move string){
+
+   strColumn := strconv.Itoa((column + 1))
+   switch row {
+   	case 0: return "a" + strColumn
+   	case 1: return "b" + strColumn
+   	case 2: return "c" + strColumn
+   	case 3: return "d" + strColumn
+   	case 4: return "e" + strColumn
+   	case 5: return "f" + strColumn
+   	case 6: return "g" + strColumn
+   	case 7: return "h" + strColumn
+   }
+   
+   panic("row > 7 or row < 0")
 }
 
 func stringMoveToInt(move string) (row, column int){
