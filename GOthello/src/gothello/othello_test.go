@@ -28,57 +28,57 @@ func Test_Bitmasks(t *testing.T) {
 
 	for i := 1; i < 8; i++ {
 		for j := 1; j < 8; j++ {
-			assertTrue(t, b.isEmpty(i, j), "Empty", i, j)
+			assertTrue(t, b.isEmptyInt(i, j), "Empty", i, j)
 		}
 	}
 
 	//black
-	assertTrue(t, b.isEmpty(5, 5), "Empty", 5, 5)
-	b.setStone(5, 5, 1)
-	assertFalse(t, b.isEmpty(5, 5), "Not Empty", 5, 5)
-	assertTrue(t, b.isStone(5, 5, 1), "Black", 5, 5)
+	assertTrue(t, b.isEmptyInt(5, 5), "Empty", 5, 5)
+	b.setStoneInt(5, 5, 1)
+	assertFalse(t, b.isEmptyInt(5, 5), "Not Empty", 5, 5)
+	assertTrue(t, b.isStoneInt(5, 5, 1), "Black", 5, 5)
 
-	assertTrue(t, b.isEmpty(0, 0), "Empty", 0, 0)
-	assertTrue(t, b.isEmpty(1, 1), "Empty", 1, 1)
-	assertTrue(t, b.isEmpty(2, 2), "Empty", 2, 2)
-	assertTrue(t, b.isEmpty(3, 3), "Empty", 3, 3)
-	assertTrue(t, b.isEmpty(4, 4), "Empty", 4, 4)
-	assertTrue(t, b.isEmpty(6, 6), "Empty", 6, 6)
-	assertTrue(t, b.isEmpty(7, 7), "Empty", 7, 7)
+	assertTrue(t, b.isEmptyInt(0, 0), "Empty", 0, 0)
+	assertTrue(t, b.isEmptyInt(1, 1), "Empty", 1, 1)
+	assertTrue(t, b.isEmptyInt(2, 2), "Empty", 2, 2)
+	assertTrue(t, b.isEmptyInt(3, 3), "Empty", 3, 3)
+	assertTrue(t, b.isEmptyInt(4, 4), "Empty", 4, 4)
+	assertTrue(t, b.isEmptyInt(6, 6), "Empty", 6, 6)
+	assertTrue(t, b.isEmptyInt(7, 7), "Empty", 7, 7)
 
 	//white
-	assertTrue(t, b.isEmpty(6, 6), "Empty", 6, 6)
-	b.setStone(6, 6, 0)
-	assertFalse(t, b.isEmpty(6, 6), "Not Empty", 6, 6)
-	assertTrue(t, b.isStone(6, 6, 0), "White", 6, 6)
+	assertTrue(t, b.isEmptyInt(6, 6), "Empty", 6, 6)
+	b.setStoneInt(6, 6, 0)
+	assertFalse(t, b.isEmptyInt(6, 6), "Not Empty", 6, 6)
+	assertTrue(t, b.isStoneInt(6, 6, 0), "White", 6, 6)
 
-	b.setStone(7, 7, 0) //h8 is special
-	assertFalse(t, b.isEmpty(7, 7), "Not Empty", 7, 7)
-	assertTrue(t, b.isStone(7, 7, 0), "White", 7, 7)
+	b.setStoneInt(7, 7, 0) //h8 is special
+	assertFalse(t, b.isEmptyInt(7, 7), "Not Empty", 7, 7)
+	assertTrue(t, b.isStoneInt(7, 7, 0), "White", 7, 7)
 }
 
 func Test_Gameplay(t *testing.T) {     
-        b := makeBoard()
+        b := MakeBoard()
         //wb
         //bw     
-        assertTrue(t, b.isStone(3, 4, 0), "Black", 4, 3)
-        assertTrue(t, b.isStone(4, 3, 0), "Black", 4, 3)
-        assertTrue(t, b.isStone(3, 3, 1), "White", 3, 3)
-        assertTrue(t, b.isStone(4, 4, 1), "White", 4, 4)
+        assertTrue(t, b.isStoneInt(3, 4, 0), "Black", 4, 3)
+        assertTrue(t, b.isStoneInt(4, 3, 0), "Black", 4, 3)
+        assertTrue(t, b.isStoneInt(3, 3, 1), "White", 3, 3)
+        assertTrue(t, b.isStoneInt(4, 4, 1), "White", 4, 4)
      
         assertTrue(t, b.markNextMoves(), b.ToString()); //mark available moves
         assertTrue(t, b.markNextMoves(), b.ToString()); //mark available moves, must work twice
         
-        assertTrue(t, b.isStone(3, 4, 0), "Black", 4, 3)
-        assertTrue(t, b.isStone(4, 3, 0), "Black", 4, 3)
-        assertTrue(t, b.isStone(3, 3, 1), "White", 3, 3)
-        assertTrue(t, b.isStone(4, 4, 1), "White", 4, 4)
+        assertTrue(t, b.isStoneInt(3, 4, 0), "Black", 4, 3)
+        assertTrue(t, b.isStoneInt(4, 3, 0), "Black", 4, 3)
+        assertTrue(t, b.isStoneInt(3, 3, 1), "White", 3, 3)
+        assertTrue(t, b.isStoneInt(4, 4, 1), "White", 4, 4)
         
         //new possible moves all Black of Course
-        assertTrue(t, b.isPossibleMove(2, 3), "Selectable", 2, 3)
-        assertTrue(t, b.isPossibleMove(4, 5), "Selectable", 4, 5)
-        assertTrue(t, b.isPossibleMove(3, 2), "Selectable", 3, 2)
-        assertTrue(t, b.isPossibleMove(5, 4), "Selectable", 5, 4)
+        assertTrue(t, b.isPossibleMoveInt(2, 3), "Selectable", 2, 3)
+        assertTrue(t, b.isPossibleMoveInt(4, 5), "Selectable", 4, 5)
+        assertTrue(t, b.isPossibleMoveInt(3, 2), "Selectable", 3, 2)
+        assertTrue(t, b.isPossibleMoveInt(5, 4), "Selectable", 5, 4)
         
         assertTrue(t, b.IsNextPlayerBlack(), "Blacks Turn", b.ToString())
       
@@ -86,27 +86,27 @@ func Test_Gameplay(t *testing.T) {
         assertFalse(t, b.makeMoveInt(1, 1), "Illegal Move expected", 1, 1,b.ToString());
  
         //nothing has changed
-        assertTrue(t, b.isStone(3, 4, 0), "Black", 4, 3)
-        assertTrue(t, b.isStone(4, 3, 0), "Black", 4, 3)
-        assertTrue(t, b.isStone(3, 3, 1), "White", 3, 3)
-        assertTrue(t, b.isStone(4, 4, 1), "White", 4, 4)
+        assertTrue(t, b.isStoneInt(3, 4, 0), "Black", 4, 3)
+        assertTrue(t, b.isStoneInt(4, 3, 0), "Black", 4, 3)
+        assertTrue(t, b.isStoneInt(3, 3, 1), "White", 3, 3)
+        assertTrue(t, b.isStoneInt(4, 4, 1), "White", 4, 4)
         
         //new possible moves all Black of Course
-        assertTrue(t, b.isPossibleMove(2, 3), "Selectable", 2, 3)
-        assertTrue(t, b.isPossibleMove(4, 5), "Selectable", 4, 5)
-        assertTrue(t, b.isPossibleMove(3, 2), "Selectable", 3, 2)
-        assertTrue(t, b.isPossibleMove(5, 4), "Selectable", 5, 4)
+        assertTrue(t, b.isPossibleMoveInt(2, 3), "Selectable", 2, 3)
+        assertTrue(t, b.isPossibleMoveInt(4, 5), "Selectable", 4, 5)
+        assertTrue(t, b.isPossibleMoveInt(3, 2), "Selectable", 3, 2)
+        assertTrue(t, b.isPossibleMoveInt(5, 4), "Selectable", 5, 4)
         
         assertTrue(t, b.IsNextPlayerBlack(), "Blacks Turn", b.ToString())        
          
         //make Legal Move
 		assertTrue(t, b.makeMoveInt(2, 3), "Legal Move expected", b.ToString());
 
-        assertTrue(t, b.isStone(2, 3, 0), "Black", 2, 3, b.ToString())
-        assertTrue(t, b.isStone(3, 4, 0), "Black", 3, 4, b.ToString())
-        assertTrue(t, b.isStone(4, 3, 0), "Black", 4, 3, b.ToString())
-        assertTrue(t, b.isStone(3, 3, 0), "Black", 3, 3, b.ToString())
-        assertTrue(t, b.isStone(4, 4, 1), "White", 4, 4, b.ToString())
+        assertTrue(t, b.isStoneInt(2, 3, 0), "Black", 2, 3, b.ToString())
+        assertTrue(t, b.isStoneInt(3, 4, 0), "Black", 3, 4, b.ToString())
+        assertTrue(t, b.isStoneInt(4, 3, 0), "Black", 4, 3, b.ToString())
+        assertTrue(t, b.isStoneInt(3, 3, 0), "Black", 3, 3, b.ToString())
+        assertTrue(t, b.isStoneInt(4, 4, 1), "White", 4, 4, b.ToString())
         
         t.Log("Mark Next moves")
               

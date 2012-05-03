@@ -45,12 +45,12 @@ func Hello() {
 
 func Replay(moves string) {
 	fmt.Println("Replay: " + moves)
-	board := makeBoard()
+	board := MakeBoard()
 	for len(moves) > 0  { //len is a system function which returns the length of a string
 		move := moves[0:2] //this is called slicing and creates a substring
 		moves = moves[2:len(moves)]
 		
-		result := board.MakeMove(move)
+		result := board.Move(move)
 		if !result {
 		  fmt.Println("Move not Made:", move)
 		  return
@@ -62,20 +62,26 @@ func Replay(moves string) {
 
 }
 
-func makeBoard() (result *Board) {
+func MakeBoard() (result *Board) {
 	result = new(Board)
 	result.initBoard()
 	return
 }
 
 func (board *Board) initBoard() { //define a method on a struct
-	board.setStone(4, 4, 1) //e5 --> White (Field Occupied)
-	board.setStone(3, 3, 1) //d4 --> White (Field Occupied)
-	board.setStone(3, 4, 0) //d5 --> Black (Field Occupied)
-	board.setStone(4, 3, 0) //e4 --> Black (Field Occupied)
+	board.setStoneInt(4, 4, 1) //e5 --> White (Field Occupied)
+	board.setStoneInt(3, 3, 1) //d4 --> White (Field Occupied)
+	board.setStoneInt(3, 4, 0) //d5 --> Black (Field Occupied)
+	board.setStoneInt(4, 3, 0) //e4 --> Black (Field Occupied)
 	board.moves = list.New()
 	board.markNextMoves()
 }
+
+/**
+*
+* PUBLIC METHODS
+*
+**/
 
 func (board *Board) PrintBoard() {
 	fmt.Println(board.ToString())
@@ -86,12 +92,12 @@ func (board *Board) ToString() (result string) {
 	for i := 0; i < 8; i++ {
 		result += strconv.Itoa(i+1) + "|"
 		for j := 0; j < 8; j++ {
-			if board.isPossibleMove(i, j){
+			if board.isPossibleMoveInt(i, j){
 			   result += "o|"
 			} else
-			if board.isEmpty(i, j) {
+			if board.isEmptyInt(i, j) {
 				result += "_|"
-			} else if board.isStone(i, j, 0) {
+			} else if board.isStoneInt(i, j, 0) {
 				result += "b|"
 			} else  {
 				result += "w|"
@@ -102,51 +108,38 @@ func (board *Board) ToString() (result string) {
 	return
 }
 
-func (board *Board) MakeMove(move string) (result bool) {
-	move = strings.ToLower(move)
-	//fmt.Println(move)
 
-	var row int
-	switch move[0:1] {
-	case "a":
-		row = 0
-	case "b":
-		row = 1
-	case "c":
-		row = 2
-	case "d":
-		row = 3
-	case "e":
-		row = 4
-	case "f":
-		row = 5
-	case "g":
-		row = 6
-	case "h":
-		row = 7
-	}
-
-	if row < 0 || row > 7 {
-		panic(" " + string(row) + " is not in range 0 .. 7")
-	}
-
-	column, error := strconv.Atoi(move[1:2])
-	if error != nil {
-		panic(error)
-	}
-
-	column = column - 1 //make it zero based
-
-	if column < 0 || column > 7 {
-		panic(string(column) + " is not in range 0 .. 7")
-	}
-
+func (board *Board) Move(move string) (result bool) {
+	row, column := stringMoveToInt(move)
 	return board.makeMoveInt(row, column)
+}
+
+func (board *Board) SetStoneUnsafe(field string, stone int) {
+	row, column := stringMoveToInt(field)
+	board.setStoneInt(row, column, stone)
+}
+
+func (board *Board) IsPossibleMove(field string) (bool) {
+	row, column := stringMoveToInt(field)
+	return board.isPossibleMoveInt(row, column)
+}
+
+func (board *Board) GetState(field string, stone int) (state int){
+	row, column := stringMoveToInt(field)
+	if board.isPossibleMoveInt(row, column){
+		return 2; //possible move
+	} else if board.isEmptyInt(row, column){
+		return -1 //empty field
+	} else if board.isStoneInt(row, column, 0){
+		return 0 // black
+	}
+	return 1 //white
+	
 }
 
 //no Method overloading: http://golang.org/doc/go_faq.html#overloading
 func (board *Board) makeMoveInt(row, column int) (result bool) {
-	if board.isPossibleMove(row, column) { //next player means last player now
+	if board.isPossibleMoveInt(row, column) { //next player means last player now
 		flipped := board.flip(row, column)
 		if !flipped {
 		fmt.Println("Not Legal: ", row, column)
@@ -193,7 +186,7 @@ func (board *Board) makeMoveInt(row, column int) (result bool) {
 	return true
 }
 
-func (board *Board) setStone(row, column, stone int) {
+func (board *Board) setStoneInt(row, column, stone int) {
 	if stone == 0 {
 		board.blackStones = board.blackStones | (1 << uint64(row*8+column))  //set black Stone
 		board.whiteStones = board.whiteStones & ^(1 << uint64(row*8+column)) //unset white Stone (or leave unset)
@@ -203,18 +196,18 @@ func (board *Board) setStone(row, column, stone int) {
 	}
 }
 
-func (board *Board) isEmpty(row, column int) bool {
+func (board *Board) isEmptyInt(row, column int) bool {
 	return ((board.whiteStones | board.blackStones) & (1 << uint64(row*8+column))) == 0
 }
 
-func (board *Board) isStone(row, column, stone int) bool {
+func (board *Board) isStoneInt(row, column, stone int) bool {
 	if stone == 0 {
 		return (board.blackStones & (1 << uint64(row*8+column))) > 0
 	}
 	return (board.whiteStones & (1 << uint64(row*8+column))) > 0
 }
 
-func (board *Board) isLegalMove(row, column int) bool {
+func (board *Board) isLegalMoveInt(row, column int) bool {
 	return board.executeFlip(row, column, false) //don't flip just check  
 }
 
@@ -254,8 +247,8 @@ func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 			continue //at the end of the board
 		}
 
-		//            log.info(nextRow + "/" + nextRow + "/" + isEmpty(nextRow, nextColumn) + "/" + isStone(nextRow, nextColumn, toFlip) + "/" + isStone(nextRow, nextColumn, endflip));
-		if board.isStone(nextRow, nextColumn, toFlip) { //the direction is right, stone of opposite colour in that direction
+		//            log.info(nextRow + "/" + nextRow + "/" + isEmptyInt(nextRow, nextColumn) + "/" + isStoneInt(nextRow, nextColumn, toFlip) + "/" + isStoneInt(nextRow, nextColumn, endflip));
+		if board.isStoneInt(nextRow, nextColumn, toFlip) { //the direction is right, stone of opposite colour in that direction
 			//                if (log.isDebugEnabled()) {
 			//                    log.debug("Flip candidate found for " + dir);
 			//                }
@@ -272,11 +265,11 @@ func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 					break //at the end of the board
 				}
 				//if we find an empty field break;
-				if board.isEmpty(nextRow, nextColumn) {
+				if board.isEmptyInt(nextRow, nextColumn) {
 					break
 				}
 
-				if board.isStone(nextRow, nextColumn, endflip) { //found a stone of same colour, lines between can be flipped
+				if board.isStoneInt(nextRow, nextColumn, endflip) { //found a stone of same colour, lines between can be flipped
 					//                       if (log.isDebugEnabled()) {
 					//                            log.debug("Possible Move found for Flip " + dir);
 					//                        }
@@ -293,8 +286,8 @@ func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 						//                            }
 
 						//flip and count stones that are not already flipped
-						if !board.isStone(nextRow, nextColumn, endflip) {
-							board.setStone(nextRow, nextColumn, endflip)
+						if !board.isStoneInt(nextRow, nextColumn, endflip) {
+							board.setStoneInt(nextRow, nextColumn, endflip)
 							flipped++
 						}
 					}
@@ -327,7 +320,7 @@ func (board *Board) markNextMoves() bool {
 	marked := false
 	board.possibleMoves = 0 //unset everything
 	for i := 0; i < 64; i++ {
-	   if board.isEmpty(i/8, i%8) && board.isLegalMove(i/8, i%8) {
+	   if board.isEmptyInt(i/8, i%8) && board.isLegalMoveInt(i/8, i%8) {
 	       board.possibleMoves = board.possibleMoves | (1 << uint64(i))
 	       marked = true;
 	   }
@@ -336,7 +329,7 @@ func (board *Board) markNextMoves() bool {
 	return marked
 }
 
-func (board *Board) isPossibleMove(row, column int) (bool){
+func (board *Board) isPossibleMoveInt(row, column int) (bool){
 
     //check that possibleMoves are marked
     if !board.finished && board.possibleMoves == 0 && !board.markNextMoves() {
@@ -347,4 +340,42 @@ func (board *Board) isPossibleMove(row, column int) (bool){
 
 func (board *Board) IsNextPlayerBlack() (bool){
 	return board.nextplayer == 0;
+}
+
+func stringMoveToInt(move string) (row, column int){
+	move = strings.ToLower(move)
+	switch move[0:1] {
+	case "a":
+		row = 0
+	case "b":
+		row = 1
+	case "c":
+		row = 2
+	case "d":
+		row = 3
+	case "e":
+		row = 4
+	case "f":
+		row = 5
+	case "g":
+		row = 6
+	case "h":
+		row = 7
+	}
+
+	if row < 0 || row > 7 {
+		panic(" " + string(row) + " is not in range 0 .. 7")
+	}
+
+	column, error := strconv.Atoi(move[1:2])
+	if error != nil {
+		panic(error)
+	}
+
+	column = column - 1 //make it zero based
+
+	if column < 0 || column > 7 {
+		panic(string(column) + " is not in range 0 .. 7")
+	}
+	return
 }
