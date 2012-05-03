@@ -4,26 +4,19 @@ import (
 	"testing"
 )
 
-func Test_Replay(t *testing.T) {
+func TestReplay(t *testing.T) {
    //black Win
    Replay("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1B1B7H6H7H8G7G8B8A7A8")
 }
 
-func assertTrue(t *testing.T, condition bool, messages ...interface{}) {
-	if condition != true {
-		t.Log(messages)
-		t.FailNow()
-	}
+
+func BenchmarkReplay(b *testing.B) { //benchmark function starts with "Benchmark" and takes a pointer to type testing.B
+    for i := 0; i < b.N; i++ { //use b.N for looping 
+         Replay("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1B1B7H6H7H8G7G8B8A7A8")
+    }
 }
 
-func assertFalse(t *testing.T, condition bool, messages ...interface{}) {
-	if condition != false {
-		t.Log(messages)
-		t.FailNow()
-	}
-}
-
-func Test_Bitmasks(t *testing.T) {
+func TestBitmasks(t *testing.T) {
 	b := new(Board)
 
 	for i := 1; i < 8; i++ {
@@ -57,7 +50,7 @@ func Test_Bitmasks(t *testing.T) {
 	assertTrue(t, b.isStoneInt(7, 7, 0), "White", 7, 7)
 }
 
-func Test_Gameplay(t *testing.T) {     
+func TestGameplay(t *testing.T) {     
         b := MakeBoard()
         //wb
         //bw     
@@ -125,4 +118,18 @@ func Test_Gameplay(t *testing.T) {
 //        }
 //        //try this move again, should fail
 //       assertFalse(b.makeMove(2, 3));  
+}
+
+func assertTrue(t *testing.T, condition bool, messages ...interface{}) {
+	if condition != true {
+		t.Log(messages)
+		t.FailNow()
+	}
+}
+
+func assertFalse(t *testing.T, condition bool, messages ...interface{}) {
+	if condition != false {
+		t.Log(messages)
+		t.FailNow()
+	}
 }

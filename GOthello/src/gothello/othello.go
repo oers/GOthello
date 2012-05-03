@@ -44,7 +44,7 @@ func Hello() {
 }
 
 func Replay(moves string) {
-	fmt.Println("Replay: " + moves)
+	//fmt.Println("Replay: " + moves)
 	board := MakeBoard()
 	for len(moves) > 0  { //len is a system function which returns the length of a string
 		move := moves[0:2] //this is called slicing and creates a substring
@@ -55,7 +55,7 @@ func Replay(moves string) {
 		  fmt.Println("Move not Made:", move)
 		  return
 		}
-	    board.PrintBoard()
+	    //board.PrintBoard()
 	}
 	
 
