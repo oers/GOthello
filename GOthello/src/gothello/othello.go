@@ -55,7 +55,6 @@ func Replay(moves string) {
 func makeBoard() (result *Board) {
 	result = new(Board)
 	result.initBoard()
-	result.PrintBoard()
 	return
 }
 
@@ -65,6 +64,7 @@ func (board *Board) initBoard() { //define a method on a struct
 	board.setStone(3, 4, 0) //d5 --> Black (Field Occupied)
 	board.setStone(4, 3, 0) //e4 --> Black (Field Occupied)
 	board.moves = list.New()
+	board.markNextMoves()
 }
 
 func (board *Board) PrintBoard() {
@@ -72,16 +72,16 @@ func (board *Board) PrintBoard() {
 }
 
 func (board *Board) ToString() (result string) {
-	result = "_|a|b|c|d|e|f|g|h|\n"
+	result = "\n_|a|b|c|d|e|f|g|h|\n"
 	for i := 0; i < 8; i++ {
 		result += strconv.Itoa(i+1) + "|"
 		for j := 0; j < 8; j++ {
-			if board.IsPossibleMove(i, j){
+			if board.isPossibleMove(i, j){
 			   result += "o|"
 			} else
-			if board.IsEmpty(i, j) {
+			if board.isEmpty(i, j) {
 				result += "_|"
-			} else if board.IsStone(i, j, 0) {
+			} else if board.isStone(i, j, 0) {
 				result += "b|"
 			} else  {
 				result += "w|"
@@ -136,13 +136,15 @@ func (board *Board) MakeMove(move string) (result bool) {
 
 //no Method overloading: http://golang.org/doc/go_faq.html#overloading
 func (board *Board) makeMoveInt(row, column int) (result bool) {
-	if board.IsLegalMove(row, column) { //next player means last player now
-		flipped := board.Flip(row, column)
+	if board.isPossibleMove(row, column) { //next player means last player now
+		flipped := board.flip(row, column)
 		if !flipped {
 		fmt.Println("Not Legal: ", row, column)
 			return false
 		}
 		board.moves.PushBack(BoardMove{row, column})
+	} else {
+	    return false
 	}
 	//first Move is Black
 	if board.nextplayer == 0 {
@@ -191,22 +193,22 @@ func (board *Board) setStone(row, column, stone int) {
 	}
 }
 
-func (board *Board) IsEmpty(row, column int) bool {
+func (board *Board) isEmpty(row, column int) bool {
 	return ((board.whiteStones | board.blackStones) & (1 << uint64(row*8+column))) == 0
 }
 
-func (board *Board) IsStone(row, column, stone int) bool {
+func (board *Board) isStone(row, column, stone int) bool {
 	if stone == 0 {
 		return (board.blackStones & (1 << uint64(row*8+column))) > 0
 	}
 	return (board.whiteStones & (1 << uint64(row*8+column))) > 0
 }
 
-func (board *Board) IsLegalMove(row, column int) bool {
+func (board *Board) isLegalMove(row, column int) bool {
 	return board.executeFlip(row, column, false) //don't flip just check  
 }
 
-func (board *Board) Flip(row, column int) bool {
+func (board *Board) flip(row, column int) bool {
 	return board.executeFlip(row, column, true)
 }
 
@@ -223,15 +225,15 @@ func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 	toFlip := (board.nextplayer - 1) * (board.nextplayer - 1) //1*1=1; -1*-1 = 1, 0*0 = 0
 	endflip := board.nextplayer
 
-	dirs := [10]direction{
-	direction{0,1},
-	direction{0,-1},		
-	direction{1,1},	
+	dirs := [...]direction{
+	direction{ 0, 1},
+	direction{ 0,-1},		
+	direction{ 1, 1},	
 	direction{-1,-1},
-	direction{1,0},
-	direction{-1,0},
-	direction{-1,1},
-	direction{1,-1}}
+	direction{ 1, 0},
+	direction{-1, 0},
+	direction{-1, 1},
+	direction{ 1,-1}}
 
 	flipped := 0
 	//look for flip in every direction
@@ -253,27 +255,28 @@ func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 		}
 
 		//            log.info(nextRow + "/" + nextRow + "/" + isEmpty(nextRow, nextColumn) + "/" + isStone(nextRow, nextColumn, toFlip) + "/" + isStone(nextRow, nextColumn, endflip));
-		if board.IsStone(nextRow, nextColumn, toFlip) { //the direction is right, stone of opposite colour in that direction
+		if board.isStone(nextRow, nextColumn, toFlip) { //the direction is right, stone of opposite colour in that direction
 			//                if (log.isDebugEnabled()) {
 			//                    log.debug("Flip candidate found for " + dir);
 			//                }
 
 			//can be flipped, if we can find a beginning i.e. stone of other colour in same direction
 			for { //can't think of an appropiate recursion end right now
+				//fmt.Println("Endless for", nextRow, nextColumn, dir.hor, dir.ver)
 				nextRow = nextRow + dir.hor
-				if nextRow == -1 || nextRow == 8 {
+				if nextRow <= -1 || nextRow >= 8 {
 					break //at the end of the board
 				}
 				nextColumn = nextColumn + dir.ver
-				if nextColumn == -1 || nextColumn == 8 {
+				if nextColumn <= -1 || nextColumn >= 8 {
 					break //at the end of the board
 				}
 				//if we find an empty field break;
-				if board.IsEmpty(nextRow, nextColumn) {
+				if board.isEmpty(nextRow, nextColumn) {
 					break
 				}
 
-				if board.IsStone(nextRow, nextColumn, endflip) { //found a stone of same colour, lines between can be flipped
+				if board.isStone(nextRow, nextColumn, endflip) { //found a stone of same colour, lines between can be flipped
 					//                       if (log.isDebugEnabled()) {
 					//                            log.debug("Possible Move found for Flip " + dir);
 					//                        }
@@ -284,13 +287,13 @@ func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 					for !(row == nextRow && column == nextColumn) { //backwards flipping, flip till we reach the start
 						nextRow = nextRow - dir.hor
 						nextColumn = nextColumn - dir.ver
-
+						//fmt.Println("Endless recursive for", nextRow, nextColumn)
 						//                            if (log.isDebugEnabled()) {
 						//                                log.debug("Flipped: " + nextColumn + "/" + nextRow + " to " + endflip);
 						//                            }
 
 						//flip and count stones that are not already flipped
-						if !board.IsStone(nextRow, nextColumn, endflip) {
+						if !board.isStone(nextRow, nextColumn, endflip) {
 							board.setStone(nextRow, nextColumn, endflip)
 							flipped++
 						}
@@ -324,7 +327,7 @@ func (board *Board) markNextMoves() bool {
 	marked := false
 	board.possibleMoves = 0 //unset everything
 	for i := 0; i < 64; i++ {
-	   if board.IsEmpty(i/8, i%8) && board.IsLegalMove(i/8, i%8) {
+	   if board.isEmpty(i/8, i%8) && board.isLegalMove(i/8, i%8) {
 	       board.possibleMoves = board.possibleMoves | (1 << uint64(i))
 	       marked = true;
 	   }
@@ -333,6 +336,15 @@ func (board *Board) markNextMoves() bool {
 	return marked
 }
 
-func (board *Board) IsPossibleMove(row, column int) (bool){
+func (board *Board) isPossibleMove(row, column int) (bool){
+
+    //check that possibleMoves are marked
+    if !board.finished && board.possibleMoves == 0 && !board.markNextMoves() {
+    	panic("Unfinished Board has no possible moves")
+    }
 	return (board.possibleMoves & (1 << uint64(row*8 + column))) > 0;
+}
+
+func (board *Board) IsNextPlayerBlack() (bool){
+	return board.nextplayer == 0;
 }
