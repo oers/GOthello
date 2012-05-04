@@ -24,11 +24,10 @@ func TestReplay(t *testing.T) {
 
 func playRandom() {
 	b := MakeBoard()
-	for !b.IsFinished() && b.GetPossibleMoves().Len() > 0 {
-		move, _ := b.GetPossibleMoves().Front().Value.(string)
-		//fmt.Println(move, ok)
-		b.Move(move)
+	for !b.IsFinished(){
+		b.MakeRandomMove()
 	}
+	//b.PrintBoard()
 }
 
 func TestBitmasks(t *testing.T) {

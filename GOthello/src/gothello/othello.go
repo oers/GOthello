@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"container/list"
+	"math/rand"
 )
 
 type BoardMove struct{
@@ -143,6 +144,13 @@ func (board *Board) GetState(field string, stone int) (state int){
 }
 
 func (board *Board) MakeRandomMove(){
+
+	for !board.finished && board.possibleMoves != 0{
+		move := rand.Int() % 64
+		if board.isPossibleMoveInt(move/8, move %8) {
+			board.makeMoveInt(move/8, move%8)
+		}
+	}
 }
 
 func (board *Board) GetPossibleMoves() (moves *list.List){
