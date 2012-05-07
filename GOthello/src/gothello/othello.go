@@ -76,6 +76,8 @@ func (board *Board) initBoard() { //define a method on a struct
 	board.setStoneInt(3, 3, 1) //d4 --> White (Field Occupied)
 	board.setStoneInt(3, 4, 0) //d5 --> Black (Field Occupied)
 	board.setStoneInt(4, 3, 0) //e4 --> Black (Field Occupied)
+	board.whiteStonesCount = 2;
+	board.blackStonesCount = 2;
 	board.moves = list.New()
 	board.markNextMoves()
 }
@@ -169,6 +171,11 @@ func (board *Board) GetPossibleMoves() (moves *list.List){
 }
 
 func (board *Board) GetResult() (black, white int){
+    if board.finished && board.blackStonesCount > board.whiteStonesCount {
+    	return 64 - board.whiteStonesCount, board.whiteStonesCount
+    } else if board.finished && board.blackStonesCount < board.whiteStonesCount {
+    	return board.blackStonesCount, 64 - board.blackStonesCount
+    }
 	return board.blackStonesCount, board.whiteStonesCount
 	
 }
@@ -340,12 +347,12 @@ func (board *Board) executeFlip(row, column int, executeFlip bool) bool {
 	}
 
 	if executeFlip {
-		if toFlip == 0 { //White
-			board.blackStonesCount += flipped
-			board.whiteStonesCount -= (flipped - 1) //flipped contains the new stone
-		} else {
+		if toFlip == 0 { //Black
 			board.blackStonesCount -= (flipped - 1) //flipped contains the new stone
 			board.whiteStonesCount += flipped
+		} else {
+			board.blackStonesCount += flipped
+			board.whiteStonesCount -= (flipped - 1) //flipped contains the new stone
 		}
 	}
 
