@@ -2,6 +2,8 @@ package gothello
 
 import (
 	"testing"
+	"math/rand"
+	"time"
 )
 
 func BenchmarkReplay(b *testing.B) { //benchmark function starts with "Benchmark" and takes a pointer to type testing.B
@@ -12,6 +14,7 @@ func BenchmarkReplay(b *testing.B) { //benchmark function starts with "Benchmark
 
 func BenchmarkRandomPlay(b *testing.B) { //benchmark function starts with "Benchmark" and takes a pointer to type testing.B
     for i := 0; i < b.N; i++ { //use b.N for looping 
+    	 rand.Seed(time.Now().UnixNano()) //set the seed
          playRandom()
     }
 }

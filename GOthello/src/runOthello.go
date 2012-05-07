@@ -3,6 +3,8 @@ package main
 import (
    "fmt"
    "gothello"
+   "math/rand"
+   "time"
 )
 
 func main() {
@@ -35,6 +37,8 @@ func main() {
       blackStart = true
       automatic = false
    }
+   
+   rand.Seed(time.Now().UnixNano()) //set the seed
    
    board := gothello.MakeBoard()
    
