@@ -45,9 +45,9 @@ func Hello() {
 	//list := new(list.List)
 }
 
-func Replay(moves string) {
+func Replay(moves string) (board *Board){
 	//fmt.Println("Replay: " + moves)
-	board := MakeBoard()
+	board = MakeBoard()
 	for len(moves) > 0  { //len is a system function which returns the length of a string
 		move := moves[0:2] //this is called slicing and creates a substring
 		moves = moves[2:len(moves)]
@@ -59,6 +59,7 @@ func Replay(moves string) {
 		}
 	    //board.PrintBoard()
 	}
+	return
 	
 
 
@@ -145,10 +146,11 @@ func (board *Board) GetState(field string, stone int) (state int){
 
 func (board *Board) MakeRandomMove(){
 
-	for !board.finished && board.possibleMoves != 0{
+	for {
 		move := rand.Int() % 64
 		if board.isPossibleMoveInt(move/8, move %8) {
 			board.makeMoveInt(move/8, move%8)
+			return
 		}
 	}
 }
@@ -161,6 +163,11 @@ func (board *Board) GetPossibleMoves() (moves *list.List){
 		}
 	}
 	return
+	
+}
+
+func (board *Board) GetResult() (black, white int){
+	return board.blackStonesCount, board.whiteStonesCount
 	
 }
 
@@ -390,36 +397,38 @@ func stringMoveToInt(move string) (row, column int){
 	move = strings.ToLower(move)
 	switch move[0:1] {
 	case "a":
-		row = 0
+		column = 0
 	case "b":
-		row = 1
+		column = 1
 	case "c":
-		row = 2
+		column = 2
 	case "d":
-		row = 3
+		column = 3
 	case "e":
-		row = 4
+		column = 4
 	case "f":
-		row = 5
+		column = 5
 	case "g":
-		row = 6
+		column = 6
 	case "h":
-		row = 7
+		column = 7
 	}
 
-	if row < 0 || row > 7 {
+	if column < 0 || column > 7 {
 		panic(" " + string(row) + " is not in range 0 .. 7")
 	}
 
-	column, error := strconv.Atoi(move[1:2])
+	row, error := strconv.Atoi(move[1:2])
 	if error != nil {
 		panic(error)
 	}
 
-	column = column - 1 //make it zero based
+	row = row - 1 //make it zero based
 
-	if column < 0 || column > 7 {
+	if row < 0 || row > 7 {
 		panic(string(column) + " is not in range 0 .. 7")
 	}
+	//fmt.Println(move, row, column)
+	
 	return
 }

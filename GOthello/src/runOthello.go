@@ -7,16 +7,77 @@ import (
 
 func main() {
    fmt.Println("GOthello")
-   gothello.Hello()
+   fmt.Println("How would you like to play?")
+   fmt.Println("Start as (b)lack or (w)hite, (a)utomatic or (t)wo players?")
+   var input string
+   fmt.Scanln(&input)
    
-   //wipeout
-   gothello.Replay("F5F6E6F4G5G6G4C6F3F7E7D6D7F8E8F2G3C7G8H5H6H3D8G7H4H7H8E3H2C5B6C8C4B3C3B8A3A6A7A8B7B5B4D3C2D1G2F1G1H1D2E2E1B1A4A5A2C1")
+   var automatic bool
+   var twoPlayer bool
+   var blackStart bool
    
-   //white Win
-   gothello.Replay("F5F6E6F4G5G6G4E7F3D6F7H3D8D3H4H5D7E3E2D2G3F8C5E8G8B5C4B4C3D1F2C6F1H2B3C2B1C7A5A3A4A6C8B6H7C1E1G2B7A7H6H8B2B8G1H1G7A1A2A8")
+   if input[0:1] == "b" {
+      blackStart = true
+      automatic = false
+   }
    
-   //black Win
-   gothello.Replay("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1B1B7H6H7H8G7G8B8A7A8")
+   if input[0:1] == "a" {
+      blackStart = true
+      automatic = true
+   }
+   
+   if input[0:1] == "w" {
+      blackStart = false
+      automatic = false
+   }
+   
+   if input[0:1] == "t" {
+      blackStart = true
+      automatic = false
+   }
+   
+   board := gothello.MakeBoard()
+   
+   if(!blackStart || automatic) {
+   		board.MakeRandomMove()
+   }
+    
+   board.PrintBoard() 
+    
+   for !board.IsFinished() {
+		if automatic  {
+			board.MakeRandomMove()
+			board.PrintBoard()
+		} else if twoPlayer {
+			fmt.Println("Make a Move:")
+		   	var move string
+		   	fmt.Scanln(&move)
+		   	fmt.Println(move)
+		   	if !board.Move(move) { 
+		   		fmt.Println("Move was illegal. Try again.")
+		   	}
+		} else {			
+		   	fmt.Println("Your Move:")
+		   	var move string
+		   	fmt.Scanln(&move)
+		   	fmt.Println(move)
+		   	if board.Move(move) { //returns false if move was not right/possible
+			   	board.PrintBoard()
+			   	board.MakeRandomMove()
+			   	board.PrintBoard()
+		   	}
+	   	}
+   }
+   
+   black, white := board.GetResult()
+   winner := "Draw"
+   if black > white {
+   		winner = "Black Wins!"
+   } else if white > black {
+   		winner = "White Wins!"
+   }
+   
+   fmt.Println(winner, " - Black: ", black, "White", white)
    
 }
 
