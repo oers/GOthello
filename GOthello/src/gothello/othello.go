@@ -148,10 +148,10 @@ func (board *Board) MakeRandomMove(){
 
 	for {
 		move := rand.Int() % 64
-		fmt.Println(intMoveToString(move/8, move %8))
+		//fmt.Println(intMoveToString(move/8, move %8))
 		if board.isPossibleMoveInt(move/8, move %8) {
 			board.makeMoveInt(move/8, move%8)
-			fmt.Println("Move made: ", intMoveToString(move/8, move %8))
+			//fmt.Println("Move made: ", intMoveToString(move/8, move %8))
 			return
 		}
 	}
