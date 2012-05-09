@@ -23,8 +23,7 @@ func (board *Board) SolveBoard() {
 		 	localResult = result
 		 	bestMove = m
 		 }
-	}
-	
+	}	
 	fmt.Println(board.ToString(), localResult, bestMove)
 }
 /*
