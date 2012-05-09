@@ -19,12 +19,53 @@ func BenchmarkRandomPlay(b *testing.B) { //benchmark function starts with "Bench
     }
 }
 
+func BenchmarkSolve10(b *testing.B) { //benchmark function starts with "Benchmark" and takes a pointer to type testing.B
+    for i := 0; i < b.N; i++ { //use b.N for looping 
+    	 rand.Seed(time.Now().UnixNano()) //set the seed
+         b := playNMoves(10)
+         b.SolveBoard()
+    }
+}
+
 func TestReplayBlackWin(t *testing.T) {
    //black Win
    board := Replay("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1B1B7H6H7H8G7G8B8A7A8")
    black, white := board.GetResult()
    assertTrue(t, black == 40, "40 Black Discs", black)
    assertTrue(t, white == 24, "24 White Discs", white)
+   
+   //Assert.assertEquals("A8".toLowerCase(), b.getLastMove());
+
+}
+
+func TestSolveBlackWin(t *testing.T) {
+   //black Win
+   Solve("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1") //B1B7H6H7H8G7G8B8A7A8")
+//   black, white := board.GetResult()
+//   assertTrue(t, black == 40, "40 Black Discs", black)
+//   assertTrue(t, white == 24, "24 White Discs", white)
+   
+   //Assert.assertEquals("A8".toLowerCase(), b.getLastMove());
+
+}
+
+func TestSolveBlackWin2(t *testing.T) {
+   //black Win
+   Solve("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1B1B7H6H7H8G7G8B8A7") //A8")
+//   black, white := board.GetResult()
+//   assertTrue(t, black == 40, "40 Black Discs", black)
+//   assertTrue(t, white == 24, "24 White Discs", white)
+   
+   //Assert.assertEquals("A8".toLowerCase(), b.getLastMove());
+
+}
+
+func TestSolveBlackWin3(t *testing.T) {
+   //black Win
+   Solve("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1B1B7H6H7H8G7G8B8") //A7A8")
+//   black, white := board.GetResult()
+//   assertTrue(t, black == 40, "40 Black Discs", black)
+//   assertTrue(t, white == 24, "24 White Discs", white)
    
    //Assert.assertEquals("A8".toLowerCase(), b.getLastMove());
 
@@ -62,6 +103,15 @@ func TestReplayDraw(t *testing.T) {
    assertTrue(t, white == 32, "32 White Discs", white)
    //Assert.assertEquals("H8".toLowerCase(), b.getLastMove());
 
+}
+
+func playNMoves(n int) (b *Board){
+	b = MakeBoard()
+	for i := 0; i <  60 - n; i++{
+		b.MakeRandomMove()
+	}
+	return
+	//b.PrintBoard()
 }
 
 

@@ -45,6 +45,10 @@ func Hello() {
 	//list := new(list.List)
 }
 
+func (board *Board) CopyOf() (Board) {
+	return Board{board.whiteStones, board.blackStones, board.whiteStonesCount, board.blackStonesCount, board.nextplayer, board.finished, list.New(), 0}
+}
+
 func Replay(moves string) (board *Board){
 	//fmt.Println("Replay: " + moves)
 	board = MakeBoard()
@@ -113,6 +117,31 @@ func (board *Board) ToString() (result string) {
 	return
 }
 
+func (board *Board) ToStringBig() (result string) {
+	result  =  "\n|   |   |   |   |   |   |   |   |   |\n"
+	result +=    "|   | A | B | C | D | E | F | G | H |\n"
+	result +=    "|___|___|___|___|___|___|___|___|___|\n"
+	for i := 0; i < 8; i++ {
+		result +="|   |   |   |   |   |   |   |   |   |\n"
+		result +="| " + strconv.Itoa(i+1) + " |"
+		for j := 0; j < 8; j++ {
+			if board.isPossibleMoveInt(i, j){
+			   result += " O |"
+			} else
+			if board.isEmptyInt(i, j) {
+				result += "   |"
+			} else if board.isStoneInt(i, j, 0) {
+				result += " B |"
+			} else  {
+				result += " W |"
+			}
+		}
+		result += "\n|___|___|___|___|___|___|___|___|___|\n"
+		//result += "\n"
+	}
+	return
+}
+
 
 func (board *Board) Move(move string) (result bool) {
 	row, column := stringMoveToInt(move)
@@ -161,7 +190,7 @@ func (board *Board) MakeRandomMove(){
 
 func (board *Board) GetPossibleMoves() (moves *list.List){
     moves = list.New()  
-	for i := 1; i <64; i++ {
+	for i := 0; i <64; i++ {
 		if board.isPossibleMoveInt(i/8, i%8) {
 			moves.PushBack(intMoveToString(i/8, i%8))
 		}
@@ -190,6 +219,7 @@ func (board *Board) makeMoveInt(row, column int) (result bool) {
 		}
 		board.moves.PushBack(BoardMove{row, column})
 	} else {
+		fmt.Println("Not Legal: ", row, column)
 	    return false
 	}
 	//first Move is Black
@@ -385,7 +415,7 @@ func (board *Board) IsNextPlayerBlack() (bool){
 	return board.nextplayer == 0;
 }
 
-func intMoveToString(row, column int) (move string){
+func intMoveToString(column, row int) (move string){
 
    strColumn := strconv.Itoa((column + 1))
    switch row {
