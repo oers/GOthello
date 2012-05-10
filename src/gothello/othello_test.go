@@ -60,16 +60,16 @@ func TestSolveBlackWin2(t *testing.T) {
 
 }
 
-func TestSolveBlackWin3(t *testing.T) {
-   //black Win
-   Solve("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1D1A3A2B2A1B1B7H6H7H8G7G8B8") //A7A8")
-//   black, white := board.GetResult()
-//   assertTrue(t, black == 40, "40 Black Discs", black)
-//   assertTrue(t, white == 24, "24 White Discs", white)
-   
-   //Assert.assertEquals("A8".toLowerCase(), b.getLastMove());
-
-}
+//func TestSolveBlackWin3(t *testing.T) {
+//   //black Win
+//   Solve("F5F6E6F4E3D6C5F3G4E2G5G6C7C3D3C2D2C6F7B5F1H4H3H5E7D7B3E1B4F8C1G1A5D8B6A6F2H2G3C8E8A4C4G2H1") //D1A3A2B2A1B1B7H6H7H8G7G8B8A7A8")
+////   black, white := board.GetResult()
+////   assertTrue(t, black == 40, "40 Black Discs", black)
+////   assertTrue(t, white == 24, "24 White Discs", white)
+//   
+//   //Assert.assertEquals("A8".toLowerCase(), b.getLastMove());
+//
+//}
 
 func TestReplayWhiteWin(t *testing.T) {
    //black Win

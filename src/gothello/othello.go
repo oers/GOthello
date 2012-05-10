@@ -217,7 +217,7 @@ func (board *Board) makeMoveInt(row, column int) (result bool) {
 		fmt.Println("Not Legal: ", row, column)
 			return false
 		}
-		board.moves.PushBack(BoardMove{row, column})
+		//board.moves.PushBack(BoardMove{row, column})
 	} else {
 		fmt.Println("Not Legal: ", row, column)
 	    return false
@@ -408,6 +408,7 @@ func (board *Board) isPossibleMoveInt(row, column int) (bool){
     if !board.finished && board.possibleMoves == 0 && !board.markNextMoves() {
     	panic("Unfinished Board has no possible moves")
     }
+    //fmt.Println("check", board.possibleMoves, row, column)
 	return (board.possibleMoves & (1 << uint64(row*8 + column))) > 0;
 }
 
@@ -415,18 +416,18 @@ func (board *Board) IsNextPlayerBlack() (bool){
 	return board.nextplayer == 0;
 }
 
-func intMoveToString(column, row int) (move string){
+func intMoveToString(row, column int) (move string){
 
-   strColumn := strconv.Itoa((column + 1))
-   switch row {
-   	case 0: return "a" + strColumn
-   	case 1: return "b" + strColumn
-   	case 2: return "c" + strColumn
-   	case 3: return "d" + strColumn
-   	case 4: return "e" + strColumn
-   	case 5: return "f" + strColumn
-   	case 6: return "g" + strColumn
-   	case 7: return "h" + strColumn
+   strRow := strconv.Itoa((row + 1))
+   switch column {
+   	case 0: return "a" + strRow
+   	case 1: return "b" + strRow
+   	case 2: return "c" + strRow
+   	case 3: return "d" + strRow
+   	case 4: return "e" + strRow
+   	case 5: return "f" + strRow
+   	case 6: return "g" + strRow
+   	case 7: return "h" + strRow
    }
    
    panic("row > 7 or row < 0")
