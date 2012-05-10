@@ -3,7 +3,10 @@ package gothello
 import (
 	"fmt"
 	"strconv"
+	"runtime"
 )
+
+var c = make(chan int, 3)
 
 type MoveAnalysis struct{
 	rating int
@@ -18,27 +21,42 @@ func Solve(moves string) {
 }
 
 func (board *Board) SolveBoard() { //this method is allowed to work on Strings, for a nice start
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	l := board.GetPossibleMoves()
 	ana := new(MoveAnalysis)
 	ana.rating = -9999
 	fmt.Println("Top",l.Len())
 	//fmt.Println(board.ToString())
+	
+	i := l.Len()
+
 	for e := l.Front(); e != nil; e = e.Next() {
-		 m := e.Value.(string)
-		 //fmt.Println("Try", m)
-		 row, column := stringMoveToInt(m)
-		 result := solveForMove(board.CopyOf(), row, column)
-		 fmt.Println("Top",m, result.ToString())
-		 //fmt.Println(board.ToString(), result, m)
-		 if isBetterResult(result.rating, ana.rating, board.nextplayer) {
-		 	ana.rating = result.rating
-		 	ana.move = m
-		 	ana.nextMove = result
-		 }
+		go execute(e.Value.(string), board)
 	}	
+	
+	for j:=0; j < i; j++ {
+		<- c
+	}
 	l = nil
-	fmt.Println(board.ToString(), ana.ToString())
+	//fmt.Println(board.ToString(), ana.ToString())
 }
+
+func execute(move string, board *Board) {
+			 m := move
+			 //fmt.Println("Try", m)
+			 row, column := stringMoveToInt(m)
+			 fmt.Println("Start", m)
+			 result := solveForMove(board.CopyOf(), row, column)
+			 fmt.Println("Top",m, result.ToString())
+//			 //fmt.Println(board.ToString(), result, m)
+//			 if isBetterResult(result.rating, ana.rating, board.nextplayer) {
+//			 	ana.rating = result.rating
+//			 	ana.move = m
+//			 	ana.nextMove = result
+//			 }
+			 c <- 1
+		 }
+
 /*
 * Recursive, works only on int interpretation
 */
